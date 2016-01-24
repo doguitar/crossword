@@ -1,0 +1,133 @@
+@media all and (orientation:landscape)
+{
+    .container-fluid {
+        padding: 0 !important;
+    }
+    .keyboard{
+        width: 30vw;
+    }
+    .keyboard td{
+        width: 10vw;
+        height: 10vw;
+    }
+    #left_keyboard{
+        float: left;
+    }
+    #right_keyboard{
+        float: right;
+    }
+    .crossword{
+        display: inline-table;
+    }
+    #crossword_container{
+        display: inline-table;
+        width: 40vw;
+        max-height: 100vh;
+    }
+    #clear{
+        display: none;
+    }
+
+}
+
+@media all and (orientation:portrait)
+{
+    .crossword{
+        display: inline-table;
+    }
+    #right_keyboard{
+        border-right: none;
+    }
+    .keyboard{
+        width: 48vw;
+        display: inline-table;
+    }
+    .keyboard td{
+        width: 10vw;
+        height: 10vw;
+    }
+    .container-fluid {
+        padding: 0 !important;
+    }
+    #crossword_container {
+        display: inline-table;
+        height: 100vw;
+        width: 100vw;
+    }
+    .crossword{
+        display: inline-table;
+        width: 100%;
+    }
+}
+
+td.cell {
+    border: solid .5vmin black;
+    overflow: hidden;
+    position: relative;
+}
+div.clue{
+    font-weight: bold;
+    font-size: 100%;
+}
+td.cell.primary.secondary{
+    background-color: slategray;
+}
+td.cell.primary, .clue.primary{
+    background-color: dimgray;
+}
+td.cell.secondary, .clue.secondary{
+    background-color: lightgray;
+}
+td.cell:after {
+  content: '';
+  display: block;
+  margin-top: 100%;
+}
+td.cell>.content {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+td.cell .clue, td.cell input, td.cell .text{
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0);
+}
+td.cell input, td.cell .text{
+    text-align: center;
+    border: none;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    text-transform: uppercase;
+    font-size: 80%;
+}
+td.cell input{
+    color: transparent;
+}
+td.cell input::selection {
+    background: transparent;
+    color: transparent;
+}
+td.cell .clue {
+    font-size: 25%;
+}
+td.cell.black {
+    background-color: black;
+}
+
+.keyboard{
+    padding: 0;
+    margin: 0;
+}
+.keyboard td {
+    border: solid .5vmin black;
+    background-color: dimgray;
+    color: white;
+    text-align: center;
+}

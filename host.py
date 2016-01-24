@@ -1,47 +1,50 @@
 #!/usr/bin/env python
 
-import datetime
 import cherrypy
 import os
-import re
-import urllib
-import sys
-import shutil
-import threading
 import time
-import copy
+import manager
 import json
-from cherrypy.lib.static import serve_file
-from mako.template import Template
+
 from mako.lookup import TemplateLookup
-from multiprocessing import Process
 
 
 class Host(object):
-    _url_base = "/"
-    _base_path = None
-    _cache_string = 'max-age=432000'
-    _stopping = False
+    url_base = "/"
+    base_path = None
+    cache_string = 'max-age=432000'
+    stopping = False
+    manager = None
 
     def __init__(self, base_path, url_base):
-        self._base_path = base_path
-        self._url_base = url_base
-        self._lookup = TemplateLookup(directories=[os.path.join(self._base_path, "html", "templates")])
+        self.base_path = base_path
+        self.url_base = url_base
+        self.lookup = TemplateLookup(directories=[os.path.join(self.base_path, "html", "templates")])
+        self.manager = manager.Manager(base_path, os.path.join(base_path, "host.db"))
 
     def __get_template(self, template):
-        return self._lookup.get_template(template)
+        return self.lookup.get_template(template)
 
     @cherrypy.expose
     def index(self):
-        return self.__get_template("index.mako").render(base=self._url_base)
+        puzzle = self.manager.read_puzzle(os.path.join(self.base_path, "crosswords", "2016-1-16-LosAngelesTimes.puz"))
+        return self.__get_template("index.mako").render(base=self.url_base, puzzle=puzzle, clues=json.dumps(puzzle["clues"]))
+
+    @cherrypy.expose
+    def sql(self, sql=None):
+        start = time.clock()
+        rows = self.manager.database.execute_sql(sql) if sql else None
+        elapsed = (time.clock() - start)
+
+        return self.__get_template("sql.mako").render(base=self.url_base, elapsed=elapsed, rows=rows)
 
     @cherrypy.expose
     #@cherrypy.tools.caching(delay=300)
     @cherrypy.tools.etags(autotags=True)
     def js(self, path=None):
         cherrypy.response.headers['Content-Type'] = 'text/javascript'
-        cherrypy.response.headers['Cache-Control'] = self._cache_string
-        return open(os.path.join(self._base_path, path))
+        cherrypy.response.headers['Cache-Control'] = self.cache_string
+        return open(os.path.join(self.base_path, "html", "js", path))
 
     @cherrypy.expose
     def json(self, type, **kwargs):
@@ -53,8 +56,8 @@ class Host(object):
     @cherrypy.tools.etags(autotags=True)
     def css(self, path=None):
         cherrypy.response.headers['Content-Type'] = 'text/css'
-        cherrypy.response.headers['Cache-Control'] = self._cache_string
-        return open(os.path.join(self._base_path, path))
+        cherrypy.response.headers['Cache-Control'] = self.cache_string
+        return open(os.path.join(self.base_path, "html", "css", path))
 
 try:
     print "launching"
