@@ -45,17 +45,17 @@ class Host(object):
         cherrypy.response.cookie['username'] = username
         cherrypy.response.cookie['username']['max-age'] = 43200
         cherrypy.response.cookie['username']['path'] = self.url_base
-        raise cherrypy.HTTPRedirect(self.url_base)
+        raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose
     def crossword(self, puzzle_id, session_id=None):
         user = self.get_username()
         if not user:
-            raise cherrypy.HTTPRedirect(self.url_base)
+            raise cherrypy.HTTPRedirect('/')
 
         if not session_id:
             session_id = self.manager.database.insert_session(int(puzzle_id))
-            raise cherrypy.HTTPRedirect(self.url_base + '/'.join(["crossword", str(puzzle_id), str(session_id)]))
+            raise cherrypy.HTTPRedirect('/'.join(["/crossword", str(puzzle_id), str(session_id)]))
 
 
         puzzle = json.loads(self.manager.database.select_puzzle(int(puzzle_id))["JSON"])
