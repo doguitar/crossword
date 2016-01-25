@@ -113,6 +113,17 @@ class Host(object):
 
 try:
     print "launching"
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+
+    settings_file = os.path.join(current_directory, "settings.json")
+    settings = { "url_base" : "/", "port" : 4567 }
+
+    if os.path.exists(settings_file):
+        with open(settings_file, 'r') as settings_obj:
+            settings = json.load(settings_obj)
+    else:
+        with open(settings_file, 'w') as settings_obj:
+            json.dump(settings, settings_obj, sort_keys=True, indent=1)
 
     app_config = {
         '/': {
@@ -125,12 +136,12 @@ try:
     cherrypy.config.update(
         {
               'server.socket_host': '0.0.0.0'
-            , 'server.socket_port': 4567
+            , 'server.socket_port': settings["port"]
             , 'thread_pool': 100
         })
-    current_directory = os.path.dirname(os.path.realpath(__file__))
+
     cherrypy.tree.mount(
-        Host(current_directory, "/"), config=app_config)
+        Host(current_directory, settings["url_base"]), config=app_config)
     cherrypy.engine.start()
     print "launched"
     cherrypy.engine.block()
