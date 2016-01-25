@@ -3,6 +3,7 @@ import db
 import puzpy
 import datetime
 import json
+import xml.etree.ElementTree as xml_tree
 
 class Manager(object):
     database = None
@@ -37,10 +38,41 @@ class Manager(object):
         xml = None
         with open(path, 'r') as obj:
             xml = obj.read()
-        return self.xml_to_json(xml)
+            xml = xml.replace( "xmlns=", "blank=")
+        return self.xml_to_json(xml_tree.fromstring(xml))
 
     def xml_to_json(self, puzzle):
-        return None
+        js = dict()
+
+        crossword = puzzle.find(".//crossword")
+        grid = crossword.find("./grid")
+        js["height"] = int(grid.attrib["height"])
+        js["width"] = int(grid.attrib["width"])
+
+        js["rows"] = [[]]
+        js["clues"] = [{},{}]
+
+        for x in range(1, js["width"]+1):
+            row = []
+            for y in range(1, js["height"]+1):
+                cell = grid.find("./cell[@x='{0}'][@y='{1}']".format(x,y))
+                cell = {
+                    "clue" : int(cell.attrib["number"]) if "number" in cell.attrib.keys() else None,
+                    "black" : cell.attrib["type"] == "block" if "type" in cell.attrib.keys() else None
+                }
+                row.append(cell)
+            js["rows"].append(row)
+
+        words = crossword.findall("./word")
+        for word in words:
+            clue = crossword.find(".//clue[@word='{0}']".format(word.attrib["id"]))
+            number = clue.attrib["number"]
+            clue_index = 1 if "-" in word.attrib["x"] else 0
+
+            js["clues"][clue_index][number] = clue.text
+
+        return js
+
     def puz_to_json(self, puzzle):
         js = dict()
 

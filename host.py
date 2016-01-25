@@ -63,9 +63,9 @@ class Host(object):
         user = self.get_username()
         if not user:
             if session_id:
-                raise cherrypy.HTTPRedirect('/?r='+self.url_base+"crossword/{0}/{1}".format(puzzle_id, session_id))
+                raise cherrypy.HTTPRedirect("/?r=/crossword/{0}/{1}".format(puzzle_id, session_id))
             else:
-                raise cherrypy.HTTPRedirect('/?r='+self.url_base+"crossword/{0}".format(puzzle_id))
+                raise cherrypy.HTTPRedirect("/?r=/crossword/{0}".format(puzzle_id))
 
         if not session_id:
             session_id = self.manager.database.get_user_session(puzzle_id, user)
