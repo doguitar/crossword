@@ -83,22 +83,23 @@ $(function() {
         highlight($(".cell").first());
         $(document.body).scrollTop($(".crossword").offset.top);
 
-        setInterval(function(){
+        function update_crossword() {
             $.get(
                 _base + "json/moves",
                 {
-                    "session_id" : window.location.pathname.split("/").pop(),
-                    "since" : since
+                    "session_id": window.location.pathname.split("/").pop(),
+                    "since": since
                 }
-            ).success(function(data){
-                for(var i = 0; i < data.length; i++){
-                    console.log(data);
+            ).success(function (data) {
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
                     var move = data[i];
-                    var cell = $(".x"+move.X+"y"+move.Y+" .answer").text(move.Letter);
-                    if(move.Id > since) since = move.Id;
+                    var cell = $(".x" + move.X + "y" + move.Y + " .answer").text(move.Letter);
+                    if (move.Id > since) since = move.Id;
                 }
-            });
-        }, 1000);
+            }).always(update_crossword);
+        }
+        update_crossword();
     }
 });
 var since = 0;

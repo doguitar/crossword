@@ -30,14 +30,15 @@ class Host(object):
         return self.lookup.get_template(template)
 
     @cherrypy.expose
-    def index(self):
+    def index(self, r=''):
         return self.__get_template("index.mako").render(
                 base=self.url_base,
                 crosswords=self.manager.database.select_puzzles(),
-                username=self.get_username())
+                username=self.get_username(),
+                return_url=r)
 
     @cherrypy.expose
-    def login(self, username):
+    def login(self, username, r=''):
         user = self.manager.database.select_user(username)
         if not user:
             self.manager.database.insert_user(username)
@@ -45,19 +46,34 @@ class Host(object):
         cherrypy.response.cookie['username'] = username
         cherrypy.response.cookie['username']['max-age'] = 43200
         cherrypy.response.cookie['username']['path'] = self.url_base
-        raise cherrypy.HTTPRedirect('/')
+
+        redirect = r or '/'
+
+        raise cherrypy.HTTPRedirect(redirect)
 
     @cherrypy.expose
     def crossword(self, puzzle_id, session_id=None):
+        if puzzle_id.isdigit():
+            puzzle_id = int(puzzle_id)
+        else:
+            raise cherrypy.HTTPRedirect('')
+        if session_id and session_id.isdigit():
+            session_id = int(session_id)
+
         user = self.get_username()
         if not user:
-            raise cherrypy.HTTPRedirect('/')
+            if session_id:
+                raise cherrypy.HTTPRedirect('/?r='+self.url_base+"crossword/{0}/{1}".format(puzzle_id, session_id))
+            else:
+                raise cherrypy.HTTPRedirect('/?r='+self.url_base+"crossword/{0}".format(puzzle_id))
 
         if not session_id:
-            session_id = self.manager.database.insert_session(int(puzzle_id))
+            session_id = self.manager.database.get_user_session(puzzle_id, user)
+            if not session_id:
+                session_id = self.manager.database.insert_session(puzzle_id, user)
             raise cherrypy.HTTPRedirect('/'.join(["/crossword", str(puzzle_id), str(session_id)]))
 
-
+        self.manager.database.set_user_session(session_id, user);
         puzzle = json.loads(self.manager.database.select_puzzle(int(puzzle_id))["JSON"])
         return self.__get_template("crossword.mako").render(
                 base=self.url_base,
@@ -98,8 +114,14 @@ class Host(object):
         elif type == "moves":
             session_id = kwargs['session_id']
             since = kwargs['since']
-            moves = self.manager.database.select_move(session_id, self.get_username(), int(since))
-
+            moves, i = [], 0
+            while i < 10:
+                i += 1
+                moves = self.manager.database.select_move(session_id, self.get_username(), int(since))
+                if len(moves) == 0:
+                    time.sleep(1)
+                else:
+                    break
             result = json.dumps(moves)
         return result
 

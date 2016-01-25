@@ -20,16 +20,28 @@ class Manager(object):
         puzzles = self.database.select_puzzles()
         for obj in os.listdir(self.crossword_path):
             full_path = os.path.join(self.crossword_path, obj)
+            js = None
             if os.path.isfile(full_path) and obj.endswith(".puz"):
-                puzzle = self.read_puzzle(full_path)
+                js = self.read_puz(full_path)
                 title = obj.replace(".puz", "")
-                if title not in map(lambda p: p["Title"], puzzles):
-                    self.database.insert_puzzle(title, db.get_timestamp(datetime.datetime.utcnow()), json.dumps(puzzle))
+            if os.path.isfile(full_path) and obj.endswith(".xml"):
+                js = self.read_xml(full_path)
+                title = obj.replace(".xml", "")
 
-    def read_puzzle(self, path):
-        return self.puzzle_to_json(puzpy.read(path))
+            if js and title not in map(lambda p: p["Title"], puzzles):
+                self.database.insert_puzzle(title, db.get_timestamp(datetime.datetime.utcnow()), json.dumps(js))
 
-    def puzzle_to_json(self, puzzle):
+    def read_puz(self, path):
+        return self.puz_to_json(puzpy.read(path))
+    def read_xml(self, path):
+        xml = None
+        with open(path, 'r') as obj:
+            xml = obj.read()
+        return self.xml_to_json(xml)
+
+    def xml_to_json(self, puzzle):
+        return None
+    def puz_to_json(self, puzzle):
         js = dict()
 
         js["title"] = puzzle.title

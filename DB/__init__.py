@@ -22,6 +22,9 @@ def from_timestamp(ts):
 def first_or_none(rows):
     return rows[0] if len(rows) > 0 else None
 
+def last_or_none(rows):
+    return rows[-1] if len(rows) > 0 else None
+
 class DB(object):
     last_id = None
 
@@ -80,10 +83,12 @@ class DB(object):
         self.execute_sql(query, (username, get_timestamp(datetime.datetime.utcnow(),)))
         return self.last_id
 
-    def insert_session(self, puzzle_id):
+    def insert_session(self, puzzle_id, username):
         query = "insert into session (PuzzleId) values (?)"
         self.execute_sql(query, (puzzle_id,))
-        return self.last_id
+        session_id = self.last_id
+        self.set_user_session(session_id, username)
+        return session_id
 
     def insert_move(self, session_id, username, x, y, char, date):
         user_id = self.select_user(username)['Id']
@@ -95,4 +100,23 @@ class DB(object):
         query = "select * from move where SessionId = ? and Id > ? and (UserId <> ? OR ? = 0) order by Id asc"
         return self.execute_sql(query, (session_id, since, user_id, since))
 
+    def get_user_session(self, puzzle_id, username):
+        user_id = self.select_user(username)['Id']
+
+        query  = "select us.SessionId "
+        query += "from user_session us "
+        query += "join session s on s.Id = us.SessionId "
+        query += "where us.UserId = ? and s.PuzzleId = ?"
+
+        result = last_or_none(self.execute_sql(query, (user_id, puzzle_id,)))
+
+        return result["SessionId"] if result else None
+
+    def set_user_session(self, session_id, username):
+        user_id = self.select_user(username)['Id']
+        query = "select SessionId from user_session where SessionId = ? and UserId = ?"
+        if len(self.execute_sql(query, (session_id, user_id,))) == 0:
+            query = "insert into user_session (SessionId, UserId) values (?, ?)"
+            self.execute_sql(query, (session_id, user_id,))
+        return
 
