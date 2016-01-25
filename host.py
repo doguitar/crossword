@@ -5,6 +5,7 @@ import os
 import time
 import manager
 import json
+import datetime
 
 from mako.lookup import TemplateLookup
 
@@ -15,6 +16,9 @@ class Host(object):
     cache_string = 'max-age=432000'
     stopping = False
     manager = None
+
+    def get_username(self):
+        return cherrypy.request.cookie['username'].value if 'username' in cherrypy.request.cookie.keys() else None
 
     def __init__(self, base_path, url_base):
         self.base_path = base_path
@@ -27,8 +31,38 @@ class Host(object):
 
     @cherrypy.expose
     def index(self):
-        puzzle = self.manager.read_puzzle(os.path.join(self.base_path, "crosswords", "2016-1-16-LosAngelesTimes.puz"))
-        return self.__get_template("index.mako").render(base=self.url_base, puzzle=puzzle, clues=json.dumps(puzzle["clues"]))
+        return self.__get_template("index.mako").render(
+                base=self.url_base,
+                crosswords=self.manager.database.select_puzzles(),
+                username=self.get_username())
+
+    @cherrypy.expose
+    def login(self, username):
+        user = self.manager.database.select_user(username)
+        if not user:
+            self.manager.database.insert_user(username)
+
+        cherrypy.response.cookie['username'] = username
+        cherrypy.response.cookie['username']['max-age'] = 43200
+        cherrypy.response.cookie['username']['path'] = '/'
+        raise cherrypy.HTTPRedirect(self.url_base)
+
+    @cherrypy.expose
+    def crossword(self, puzzle_id, session_id=None):
+        user = self.get_username()
+        if not user:
+            raise cherrypy.HTTPRedirect(self.url_base)
+
+        if not session_id:
+            session_id = self.manager.database.insert_session(int(puzzle_id))
+            raise cherrypy.HTTPRedirect(self.url_base + '/'.join(["crossword", str(puzzle_id), str(session_id)]))
+
+
+        puzzle = json.loads(self.manager.database.select_puzzle(int(puzzle_id))["JSON"])
+        return self.__get_template("crossword.mako").render(
+                base=self.url_base,
+                puzzle=puzzle,
+                clues=json.dumps(puzzle["clues"]))
 
     @cherrypy.expose
     def sql(self, sql=None):
@@ -36,7 +70,11 @@ class Host(object):
         rows = self.manager.database.execute_sql(sql) if sql else None
         elapsed = (time.clock() - start)
 
-        return self.__get_template("sql.mako").render(base=self.url_base, elapsed=elapsed, rows=rows)
+        return self.__get_template("sql.mako").render(
+                base=self.url_base,
+                elapsed=elapsed,
+                rows=rows,
+                sql=sql)
 
     @cherrypy.expose
     #@cherrypy.tools.caching(delay=300)
@@ -49,7 +87,21 @@ class Host(object):
     @cherrypy.expose
     def json(self, type, **kwargs):
         cherrypy.response.headers['Content-Type'] = 'application/json'
-        return
+        result = None
+        if type == "move":
+            x = int(kwargs['cord_x'])
+            y = int(kwargs['cord_y'])
+            char = kwargs['char']
+            session_id = kwargs['session_id']
+            self.manager.database.insert_move(session_id, self.get_username(), x, y, char, datetime.datetime.utcnow())
+
+        elif type == "moves":
+            session_id = kwargs['session_id']
+            since = kwargs['since']
+            moves = self.manager.database.select_move(session_id, self.get_username(), int(since))
+
+            result = json.dumps(moves)
+        return result
 
     @cherrypy.expose
     #@cherrypy.tools.caching(delay=300)

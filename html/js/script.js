@@ -1,84 +1,107 @@
-$(function(){
-    $(".crossword .cell").click(function(){
-        var cell = $(this);
-        if(cell.hasClass("primary") && cell.hasClass("secondary"))
-            toggle_vert(this);
-        else{
-            select_cell(cell);
-        }
+$(function() {
+    $("select#puzzle").change(function(){
+        window.location = $(this).val();
     });
-    $(".keyboard td").click(function(){
-        var key = $(this).text();
-        var cell = $(".cell.primary.secondary");
-        switch (key){
-            case "":
-                toggle_vert(cell);
-                break;
-            case "↓":
-                move_cell(cell, 1, true);
-                break;
-            case "←":
-                move_cell(cell, -1, false);
-                break;
-            case "↑":
-                move_cell(cell, -1, true);
-                break;
-            case "→":
-                move_cell(cell, 1, false);
-                break;
-            case "del":
-                write_letter("");
-                move_cell(cell, -1, $(".crossword").hasClass("vert"));
-                break;
-            default:
-                write_letter(key);
-                move_cell(cell, 1, $(".crossword").hasClass("vert"));
-                break;
-        }
-    });
-    $(document.body).keydown(function(e){
-        var code = e.keyCode || e.which;
-        console.log(code);
-        var cell = $(".cell.primary.secondary");
-        switch (code){
-            case 32: //space
-                toggle_vert(cell);
-                break;
-            case 8: //backspace
-            case 46: //delete
-                write_letter("");
-                move_cell(cell, -1, $(".crossword").hasClass("vert"));
-                break;
-            case 39: //right
-                move_cell(cell, 1, false);
-                e.preventDefault();
-                break;
-            case 37: //left
-                move_cell(cell, -1, false);
-                e.preventDefault();
-                break;
-            case 38: //up
-                move_cell(cell, -1, true);
-                e.preventDefault();
-                break;
-            case 40: //down
-                move_cell(cell, 1, true);
-                e.preventDefault();
-                break;
-            default:
-                if(is_letter(code)) {
-                    write_letter(String.fromCharCode(code));
+    if ($(".crossword").length > 0) {
+        $(".crossword .cell").click(function () {
+            var cell = $(this);
+            if (cell.hasClass("primary") && cell.hasClass("secondary"))
+                toggle_vert(this);
+            else {
+                select_cell(cell);
+            }
+        });
+        $(".keyboard td").click(function () {
+            var key = $(this).text();
+            var cell = $(".cell.primary.secondary");
+            switch (key) {
+                case "":
+                    toggle_vert(cell);
+                    break;
+                case "↓":
+                    move_cell(cell, 1, true);
+                    break;
+                case "←":
+                    move_cell(cell, -1, false);
+                    break;
+                case "↑":
+                    move_cell(cell, -1, true);
+                    break;
+                case "→":
+                    move_cell(cell, 1, false);
+                    break;
+                case "del":
+                    write_letter("");
+                    move_cell(cell, -1, $(".crossword").hasClass("vert"));
+                    break;
+                default:
+                    write_letter(key);
                     move_cell(cell, 1, $(".crossword").hasClass("vert"));
-                }
-        }
-    });
-    $(window).resize(function(){
-        $(".cell").css("font-size", $(".cell").height() + "px" );
-    });
-    highlight($(".cell").first());
-    $(document.body).scrollTo($(".crossword").offset.top);
-});
+                    break;
+            }
+        });
+        $(document.body).keydown(function (e) {
+            var code = e.keyCode || e.which;
+            console.log(code);
+            var cell = $(".cell.primary.secondary");
+            switch (code) {
+                case 32: //space
+                    toggle_vert(cell);
+                    break;
+                case 8: //backspace
+                case 46: //delete
+                    write_letter("");
+                    move_cell(cell, -1, $(".crossword").hasClass("vert"));
+                    break;
+                case 39: //right
+                    move_cell(cell, 1, false);
+                    e.preventDefault();
+                    break;
+                case 37: //left
+                    move_cell(cell, -1, false);
+                    e.preventDefault();
+                    break;
+                case 38: //up
+                    move_cell(cell, -1, true);
+                    e.preventDefault();
+                    break;
+                case 40: //down
+                    move_cell(cell, 1, true);
+                    e.preventDefault();
+                    break;
+                default:
+                    if (is_letter(code)) {
+                        write_letter(String.fromCharCode(code));
+                        move_cell(cell, 1, $(".crossword").hasClass("vert"));
+                    }
+            }
+        });
+        $(".cell").css("font-size", $(".cell").height() + "px");
+        $(window).resize(function () {
+            $(".cell").css("font-size", $(".cell").height() + "px");
+        });
+        highlight($(".cell").first());
+        $(document.body).scrollTop($(".crossword").offset.top);
 
+        setInterval(function(){
+            $.get(
+                _base + "json/moves",
+                {
+                    "session_id" : window.location.pathname.split("/").pop(),
+                    "since" : since
+                }
+            ).success(function(data){
+                for(var i = 0; i < data.length; i++){
+                    console.log(data);
+                    var move = data[i];
+                    var cell = $(".x"+move.X+"y"+move.Y+" .answer").text(move.Letter);
+                    if(move.Id > since) since = move.Id;
+                }
+            });
+        }, 1000);
+    }
+});
+var since = 0;
 function clear_highlights(){
     $(".cell.primary").removeClass("primary")
     $(".cell.secondary").removeClass("secondary");
@@ -90,7 +113,21 @@ function select_cell(cell){
 }
 
 function write_letter(char){
-    $(".cell.primary.secondary .answer").text(char);
+    var cell = $(".cell.primary.secondary .answer");
+    var x = cell.parents("td").attr("x");
+    var y = cell.parents("td").attr("y");
+
+    $.get(
+        _base + "json/move",
+        {
+            "cord_x" : x,
+            "cord_y" : y,
+            "char" : char,
+            "session_id" : window.location.pathname.split("/").pop()
+        }
+    );
+
+    cell.text(char);
 }
 
 function toggle_vert(cell){
@@ -108,12 +145,12 @@ function move_cell(cell, count, vert){
         if(vert) y += count;
         else x += count;
         cell = $(".x"+x+"y"+y+"");
-        if (cell.length == 0){
+        if (cell.length == 0 && count > 0){
             if(vert) {x += 1; y = 0}
             else {y += 1; x = 0;}
             cell = $(".x"+x+"y"+y+"");
         }
-        if(!cell.hasClass("black"))
+        if(cell.length > 0 && !cell.hasClass("black"))
             select_cell(cell);
     }while(cell.length > 0 && cell.hasClass("black"))
 }

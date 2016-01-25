@@ -12,7 +12,7 @@
     });
 </script>
 
-<form action="${base}test" method="get">
+<form action="${base}sql" method="get">
 	<textarea name="sql" id="sql" style="width:100%" rows="10">${sql if sql else ""}</textarea>
 	<input type="submit" value="submit" />
 </form>
@@ -29,8 +29,8 @@
 	%endif
 	% for i in range(0, len(rows)):
 	<tr class="${'alt' if i % 2 == 1 else ''}">
-		% for c in rows[i]:		
-		<td>${c}</td>		
+		% for c in rows[i].keys():
+		<td>${ rows [i] [c] }</td>
 		%endfor
 	</tr>
 	%endfor
