@@ -44,7 +44,7 @@ class Host(object):
 
         cherrypy.response.cookie['username'] = username
         cherrypy.response.cookie['username']['max-age'] = 43200
-        cherrypy.response.cookie['username']['path'] = '/'
+        cherrypy.response.cookie['username']['path'] = self.url_base
         raise cherrypy.HTTPRedirect(self.url_base)
 
     @cherrypy.expose

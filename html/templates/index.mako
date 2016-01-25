@@ -13,7 +13,7 @@
 	<select id="puzzle">
 		<option></option>
 		% for c in crosswords:
-		<option value="${base}crossword/${c["Id"]}">${c["Title"]}</option>
+		<option value="${c["Id"]}">${c["Title"]}</option>
 		% endfor
 	</select>
     % endif

@@ -1,6 +1,6 @@
 $(function() {
     $("select#puzzle").change(function(){
-        window.location = $(this).val();
+        document.location = _base + "crossword/" + $(this).val();
     });
     if ($(".crossword").length > 0) {
         $(".crossword .cell").click(function () {
