@@ -75,10 +75,13 @@ td.cell.primary.secondary{
     background-color: slategray;
 }
 td.cell.primary, .clue.primary{
-    background-color: dimgray;
+    background-color: rgba(168, 0, 0, 0.5);
 }
 td.cell.secondary, .clue.secondary{
-    background-color: lightgray;
+    background-color: rgba(255, 213, 0, 0.5);
+}
+.cell .text, .clue .text {
+    opacity: 1;
 }
 td.cell:after {
   content: '';
@@ -129,7 +132,7 @@ td.cell.black {
 }
 .keyboard td {
     border: solid .5vmin black;
-    background-color: dimgray;
-    color: white;
+    background-color: #A80000;
+    color: #FFD600;
     text-align: center;
 }

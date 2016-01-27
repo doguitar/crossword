@@ -108,9 +108,11 @@ function clear_highlights(){
     $(".cell.secondary").removeClass("secondary");
 }
 
-function select_cell(cell){
-    clear_highlights();
-    highlight(cell);
+function select_cell(cell) {
+    if (!$(cell).hasClass("black")) {
+        clear_highlights();
+        highlight(cell);
+    }
 }
 
 function write_letter(char){
