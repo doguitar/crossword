@@ -41,6 +41,8 @@ $(function() {
             }
         });
         $(document.body).keydown(function (e) {
+            if (e.ctrlKey || e.altKey) return;
+
             var code = e.keyCode || e.which;
             console.log(code);
             var cell = $(".cell.primary.secondary");
@@ -52,6 +54,7 @@ $(function() {
                 case 46: //delete
                     write_letter("");
                     move_cell(cell, -1, $(".crossword").hasClass("vert"));
+                    e.preventDefault();
                     break;
                 case 39: //right
                     move_cell(cell, 1, false);
