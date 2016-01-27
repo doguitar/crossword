@@ -34,8 +34,8 @@
 				<li><a href="${link}" role="${role}" class="${cls}">${name}</a></li>	
 				% endfor
 			</ul>		
-		</div><!-- /.navbar-collapse -->
-	</div><!-- /.container-fluid -->
+		</div>
+	</div>
 </nav>
 <div class="container-fluid" role="main">
 ${self.body()}
