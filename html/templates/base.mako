@@ -1,6 +1,6 @@
 <% 	
 	nav_links = [
-		['sql', base+'sql', '', '']
+		#['sql', base+'sql', '', '']
 	]
 %>
 <!DOCTYPE html>
