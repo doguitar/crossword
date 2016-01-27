@@ -67,7 +67,7 @@ class Manager(object):
         for word in words:
             clue = crossword.find(".//clue[@word='{0}']".format(word.attrib["id"]))
             number = clue.attrib["number"]
-            clue_index = 1 if "-" in word.attrib["x"] else 0
+            clue_index = 0 if "-" in word.attrib["x"] else 1
 
             js["clues"][clue_index][number] = clue.text
 
