@@ -117,7 +117,7 @@ class Host(object):
             moves, i = [], 0
             while i < 10:
                 i += 1
-                moves = self.manager.database.select_move(session_id, self.get_username(), int(since))
+                moves = self.manager.database.select_move(session_id, int(since))
                 if len(moves) == 0:
                     time.sleep(1)
                 else:

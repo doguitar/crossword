@@ -95,10 +95,9 @@ class DB(object):
         query = "insert into move (SessionId, UserId, Date, X, Y, Letter) values (?, ?, ?, ?, ?, ?)"
         self.execute_sql(query, (session_id, user_id, get_timestamp(date), x, y, char,))
 
-    def select_move(self, session_id, username, since):
-        user_id = self.select_user(username)['Id']
-        query = "select * from move where SessionId = ? and Id > ? and (UserId <> ? OR ? = 0) order by Id asc"
-        return self.execute_sql(query, (session_id, since, user_id, since))
+    def select_move(self, session_id, since):
+        query = "select * from move where SessionId = ? and Id > ? order by Id asc"
+        return self.execute_sql(query, (session_id, since, ))
 
     def get_user_session(self, puzzle_id, username):
         user_id = self.select_user(username)['Id']
