@@ -8,6 +8,7 @@ import json
 import datetime
 
 from mako.lookup import TemplateLookup
+from cherrypy.lib.static import serve_file
 
 
 class Host(object):
@@ -81,6 +82,9 @@ class Host(object):
                 clues=json.dumps(puzzle["clues"]))
 
     @cherrypy.expose
+    def victory(self):
+        return self.__get_template("victory.mako").render(base=self.url_base)
+    @cherrypy.expose
     def sql(self, sql=None):
         start = time.clock()
         rows = self.manager.database.execute_sql(sql) if sql else None
@@ -91,15 +95,6 @@ class Host(object):
                 elapsed=elapsed,
                 rows=rows,
                 sql=sql)
-
-    @cherrypy.expose
-    #@cherrypy.tools.caching(delay=300)
-    @cherrypy.tools.etags(autotags=True)
-    def js(self, path=None):
-        cherrypy.response.headers['Content-Type'] = 'text/javascript'
-        cherrypy.response.headers['Cache-Control'] = self.cache_string
-        return open(os.path.join(self.base_path, "html", "js", path))
-
     @cherrypy.expose
     def json(self, type, **kwargs):
         cherrypy.response.headers['Content-Type'] = 'application/json'
@@ -128,10 +123,33 @@ class Host(object):
     @cherrypy.expose
     #@cherrypy.tools.caching(delay=300)
     @cherrypy.tools.etags(autotags=True)
+    def js(self, path=None):
+        cherrypy.response.headers['Content-Type'] = 'text/javascript'
+        cherrypy.response.headers['Cache-Control'] = self.cache_string
+        return open(os.path.join(self.base_path, "html", "js", path))
+
+
+    @cherrypy.expose
+    #@cherrypy.tools.caching(delay=300)
+    @cherrypy.tools.etags(autotags=True)
     def css(self, path=None):
         cherrypy.response.headers['Content-Type'] = 'text/css'
         cherrypy.response.headers['Cache-Control'] = self.cache_string
         return open(os.path.join(self.base_path, "html", "css", path))
+
+    @cherrypy.expose
+    #@cherrypy.tools.caching(delay=300)
+    @cherrypy.tools.etags(autotags=True)
+    def audio(self, path=None):
+        cherrypy.response.headers['Cache-Control'] = self.cache_string
+        return serve_file(os.path.join(self.base_path, "html", "audio", path))
+
+    @cherrypy.expose
+    #@cherrypy.tools.caching(delay=300)
+    @cherrypy.tools.etags(autotags=True)
+    def images(self, path=None):
+        cherrypy.response.headers['Cache-Control'] = self.cache_string
+        return serve_file(os.path.join(self.base_path, "html", "images", path))
 
 try:
     print "launching"

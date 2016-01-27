@@ -26,7 +26,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="${base}" title="Comrade's Communal Crossword Puzzles" style="margin-left: 0;">&#9773; CCCP &#9773;</a>
+			<a class="navbar-brand" href="${base}" title="Comrade's Concurrent Crossword Puzzles" style="margin-left: 0;">&#9773; CCCP &#9773;</a>
 		</div>
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
