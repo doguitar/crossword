@@ -52,9 +52,9 @@ class Manager(object):
         js["rows"] = [[]]
         js["clues"] = [{},{}]
 
-        for x in range(1, js["width"]+1):
+        for y in range(1, js["height"]+1):
             row = []
-            for y in range(1, js["height"]+1):
+            for x in range(1, js["width"]+1):
                 cell = grid.find("./cell[@x='{0}'][@y='{1}']".format(x,y))
                 cell = {
                     "clue" : int(cell.attrib["number"]) if "number" in cell.attrib.keys() else None,
