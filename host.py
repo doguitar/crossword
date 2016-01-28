@@ -26,7 +26,7 @@ class Host(object):
         self.url_base = url_base
         self.lookup = TemplateLookup(directories=[os.path.join(self.base_path, "html", "templates")])
         self.manager = manager.Manager(base_path, os.path.join(base_path, "host.db"))
-        cherrypy.engine.subscribe('stop', self.___del__)
+        cherrypy.engine.subscribe('stop', self.__del__())
 
     def __del__(self):
         self.manager.__del__()
