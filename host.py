@@ -19,7 +19,12 @@ class Host(object):
     manager = None
 
     def get_username(self):
-        return cherrypy.request.cookie['username'].value if 'username' in cherrypy.request.cookie.keys() else None
+        username = cherrypy.request.cookie['username'].value if 'username' in cherrypy.request.cookie.keys() else None
+        if not self.manager.database.select_user(username):
+            cherrypy.response.cookie['username'] = username
+            cherrypy.response.cookie['username'].expires = 0
+            username = None
+        return username
 
     def __init__(self, base_path, url_base):
         self.base_path = base_path
