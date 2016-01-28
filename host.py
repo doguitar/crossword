@@ -28,7 +28,7 @@ class Host(object):
         self.manager = manager.Manager(base_path, os.path.join(base_path, "host.db"))
         cherrypy.engine.subscribe('stop', self.___del__)
 
-    def ___del__(self):
+    def __del__(self):
         self.manager.__del__()
 
     def __get_template(self, template):
