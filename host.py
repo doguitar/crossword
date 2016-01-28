@@ -26,6 +26,7 @@ class Host(object):
         self.url_base = url_base
         self.lookup = TemplateLookup(directories=[os.path.join(self.base_path, "html", "templates")])
         self.manager = manager.Manager(base_path, os.path.join(base_path, "host.db"))
+        cherrypy.engine.subscribe('stop', self.___del__)
 
     def ___del__(self):
         self.manager.__del__()
@@ -182,11 +183,13 @@ try:
             , 'server.socket_port': settings["port"]
             , 'thread_pool': 100
         })
-
-    cherrypy.tree.mount(
-        Host(current_directory, settings["url_base"]), config=app_config)
+    host_process = Host(current_directory, settings["url_base"])
+    cherrypy.tree.mount(host_process, config=app_config)
     cherrypy.engine.start()
     print "launched"
     cherrypy.engine.block()
 except Exception as e:
     print e
+finally:
+    if host_process:
+        host_process.__del__()

@@ -33,6 +33,9 @@ class DB(object):
         self._db_file = db_file
         self.__initialize_db()
 
+    def __del__(self):
+        return
+
     def __initialize_db(self):
         if not os.path.exists(self._db_file):
             self.execute_sql("CREATE TABLE Session (Id INTEGER PRIMARY KEY, PuzzleId INTEGER )")

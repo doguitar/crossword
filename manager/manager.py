@@ -45,6 +45,9 @@ class Manager(object):
             (downloaders.LATimesDownloader, "{0}-{1}-{2}.LA Times", 'xml', self.read_xml)
         ]
         titles = map(lambda p: p["Title"], self.database.select_puzzles())
+        crossword_path = os.path.join(self.base_path, "crosswords")
+        if not os.path.exists(crossword_path):
+            os.makedirs(crossword_path)
 
         now = datetime.datetime.today()
         for i in range(0, 30):
@@ -52,7 +55,7 @@ class Manager(object):
             for downloader, mask, extension, reader in dl:
                 title = mask.format(current.year, current.month, current.day)
                 if title not in titles:
-                    filename = os.path.join(self.base_path, "crosswords", title + "." + extension)
+                    filename = os.path.join(crossword_path, title + "." + extension)
                     try:
                         if not os.path.exists(filename):
                             data = downloader.download(now)
@@ -66,20 +69,6 @@ class Manager(object):
                         print e
 
         return
-
-    def scan_puzzles(self):
-        for obj in os.listdir(self.crossword_path):
-            full_path = os.path.join(self.crossword_path, obj)
-            js = None
-            if os.path.isfile(full_path) and obj.endswith(".puz"):
-                js = self.read_puz(full_path)
-                title = obj.replace(".puz", "")
-            if os.path.isfile(full_path) and obj.endswith(".xml"):
-                js = self.read_xml(full_path)
-                title = obj.replace(".xml", "")
-
-            if js and title not in map(lambda p: p["Title"], puzzles):
-                self.database.insert_puzzle(title, db.get_timestamp(datetime.datetime.utcnow()), json.dumps(js))
 
     def read_puz(self, path):
         return self.puz_to_json(puzpy.read(path))
