@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import uuid
 import datetime
@@ -33,6 +34,13 @@ class DB(object):
         self.__initialize_db()
 
     def __initialize_db(self):
+        if not os.path.exists(self._db_file):
+            self.execute_sql("CREATE TABLE Session (Id INTEGER PRIMARY KEY, PuzzleId INTEGER )")
+            self.execute_sql("CREATE TABLE Puzzle (Id INTEGER PRIMARY KEY, Title TEXT, Timestamp INTEGER , JSON TEXT)")
+            self.execute_sql("CREATE TABLE User_Session (SessionId INTEGER, UserId INTEGER)")
+            self.execute_sql("CREATE TABLE User (Id INTEGER PRIMARY KEY, Username TEXT UNIQUE, LastAccessed INTEGER )")
+            self.execute_sql("CREATE TABLE Move (Id INTEGER PRIMARY KEY, SessionId INTEGER , UserId INTEGER , Date INTEGER, X INTEGER, Y INTEGER, Letter CHAR )")
+            return
         return self._db_file
 
     def execute_sql(self, sql, parameters=None):

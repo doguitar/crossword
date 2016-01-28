@@ -1,6 +1,13 @@
 <%inherit file="/base.mako"/>
 <% cell_size = 100/float(puzzle["height"])
 %>
+<%namespace name="nav" file="/nav.mako"/>
+<%block name="nav_block">
+    ${nav.make_nav('')}
+</%block>
+<%block name="title_block">
+    ${puzzle["title"]}
+</%block>
 <script type="text/javascript">
 	var clues = ${clues};
 </script>

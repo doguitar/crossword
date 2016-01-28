@@ -1,4 +1,8 @@
 <%inherit file="/base.mako"/>
+<%namespace name="nav" file="/nav.mako"/>
+<%block name="nav_block">
+    ${nav.make_nav('sql')}
+</%block>
 <script type="text/javascript">
 	function grow_input(){
 		var input = $("#sql");

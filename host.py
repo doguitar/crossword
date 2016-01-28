@@ -27,6 +27,9 @@ class Host(object):
         self.lookup = TemplateLookup(directories=[os.path.join(self.base_path, "html", "templates")])
         self.manager = manager.Manager(base_path, os.path.join(base_path, "host.db"))
 
+    def ___del__(self):
+        self.manager.__del__()
+
     def __get_template(self, template):
         return self.lookup.get_template(template)
 
@@ -34,7 +37,7 @@ class Host(object):
     def index(self, r=''):
         return self.__get_template("index.mako").render(
                 base=self.url_base,
-                crosswords=self.manager.database.select_puzzles(),
+                crosswords=sorted(self.manager.database.select_puzzles(), key=lambda p: p["Timestamp"], reverse=True),
                 username=self.get_username(),
                 return_url=r)
 

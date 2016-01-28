@@ -1,4 +1,8 @@
 <%inherit file="/base.mako"/>
+<%namespace name="nav" file="/nav.mako"/>
+<%block name="nav_block">
+    ${nav.make_nav('')}
+</%block>
 <div style="text-align: center;">
 	% if not username:
 	<form action="${base}login">

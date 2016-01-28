@@ -63,3 +63,4 @@ target/
 .idea/
 settings.json
 host.db*
+crosswords/*
