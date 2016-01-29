@@ -53,6 +53,8 @@ class Manager(object):
         for i in range(0, 30):
             current = now - datetime.timedelta(days=i)
             for downloader, mask, extension, reader in dl:
+                if self.stopping:
+                    return
                 title = mask.format(current.year, current.month, current.day)
                 if title not in titles:
                     filename = os.path.join(crossword_path, title + "." + extension)

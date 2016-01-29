@@ -2,14 +2,15 @@
 <html lang="en">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
 		<link rel="stylesheet" href="${base}css/bootstrap.min.css">
 		<link rel="stylesheet" href="${base}css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="${base}css/style.css">
+        <%block name="css_block"></%block>
 		<script type="text/javascript" >var _base = "${base}";</script>
 		<script src="${base}js/jquery-1.10.2.min.js" ></script>
 		<script src="${base}js/bootstrap.min.js"></script>
 		<script src="${base}js/script.js"></script>
+        <%block name="js_block"></%block>
         <title><%block name="title_block">&#9773; CCCP &#9773;</%block></title>
 	</head>
 	<body style="">

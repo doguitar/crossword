@@ -5,10 +5,12 @@
 </%block>
 <div style="text-align: center;">
 	% if not username:
-	<form action="${base}login">
-		<input type="text" name="username" placeholder="username" />
-		<input type="hidden" name="r" value="${return_url}" />
-	</form>
+    <%block name="js_block">
+    <script src="${base}js/crypto/rollups/sha3.js"></script>
+    <script src="${base}js/login.js"></script>
+    </%block>
+    <%namespace name="login" file="/login.mako"/>
+        ${login.login()}
     % else:
 	<select id="puzzle">
 		<option></option>

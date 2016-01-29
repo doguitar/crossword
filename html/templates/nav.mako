@@ -1,7 +1,8 @@
 <%def name="make_nav(selected)">
 <%
 	nav_links = [
-		#['sql', base+'sql', '']
+		#['sql', base+'sql', ''],
+		#['crypto', base+'crypto', '']
 	]
 %>
 <nav class="navbar navbar-inverse navbar-static-top">

@@ -136,3 +136,12 @@ td.cell.black {
     color: #FFD600;
     text-align: center;
 }
+
+#login input {
+    margin-bottom: 5px;
+    width: 100%;
+    text-align: center;
+}
+#login input#confirm, #login input#display {
+    display: none;
+}
