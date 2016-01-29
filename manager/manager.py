@@ -8,6 +8,7 @@ import time
 import db
 import downloaders
 
+
 class Manager(object):
     database = None
     base_path = None
