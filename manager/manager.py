@@ -61,7 +61,7 @@ class Manager(object):
                     filename = os.path.join(crossword_path, title + "." + extension)
                     try:
                         if not os.path.exists(filename):
-                            data = downloader.download(now)
+                            data = downloader.download(current)
                             time.sleep(1)
                             with open(filename, 'w') as puzzle:
                                 puzzle.write(data)
