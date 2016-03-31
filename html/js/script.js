@@ -87,24 +87,30 @@ $(function() {
         $(document.body).scrollTop($(".crossword").offset.top);
 
         function update_crossword() {
-            $.get(
-                _base + "json/moves",
-                {
-                    "session_id": window.location.pathname.split("/").pop(),
-                    "since": since
-                }
-            ).success(function (data) {
-                console.log(data);
-                for (var i = 0; i < data.length; i++) {
-                    var move = data[i];
-                    var cell = $(".x" + move.X + "y" + move.Y + " .answer").text(move.Letter);
-                    if (move.Id > since) since = move.Id;
-                }
-            }).always(update_crossword);
+            if (!updating) {
+                updating = true;
+                $.get(
+                    _base + "json/moves",
+                    {
+                        "session_id": window.location.pathname.split("/").pop(),
+                        "since": since
+                    }
+                ).success(function (data) {
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        var move = data[i];
+                        var cell = $(".x" + move.X + "y" + move.Y + " .answer").text(move.Letter);
+                        if (move.Id > since) since = move.Id;
+                    }
+                }).always(function(){ updating = false; });
+            }
         }
-        update_crossword();
+        ifvisible.onEvery(0.5, function(){
+            update_crossword();
+        });
     }
 });
+var updating = false;
 var since = 0;
 function clear_highlights(){
     $(".cell.primary").removeClass("primary")

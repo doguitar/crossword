@@ -9,6 +9,7 @@
 		<script type="text/javascript" >var _base = "${base}";</script>
 		<script src="${base}js/jquery-1.10.2.min.js" ></script>
 		<script src="${base}js/bootstrap.min.js"></script>
+		<script src="${base}js/ifvisible.min.js"></script>
 		<script src="${base}js/script.js"></script>
         <%block name="js_block"></%block>
         <title><%block name="title_block">&#9773; CCCP &#9773;</%block></title>
