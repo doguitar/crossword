@@ -161,7 +161,7 @@ function move_cell(cell, count, vert){
     }while(cell.length > 0 && cell.hasClass("black"))
 }
 function is_letter(keycode){
-    return keycode >= 65 && keycode <= 88;
+    return keycode >= 65 && keycode <= 90;
 }
 
 function highlight(cell){
