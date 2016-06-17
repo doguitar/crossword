@@ -141,7 +141,7 @@ class DB(object):
             self.execute_sql(query, (session_id, userhash, get_timestamp(date), x, y, char,))
 
     def select_move(self, session_id, since):
-        query = "select * from move where SessionId = ? and Id > ? order by Id asc"
+        query = "select m.*, u.Username from move m join user u on m.UserHash = hash(u.Id) where m.SessionId = ? and m.Id > ? order by Id asc"
         return self.execute_sql(query, (session_id, since, ))
 
     def get_user_session(self, puzzle_id, userhash):

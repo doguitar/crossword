@@ -99,7 +99,18 @@ $(function() {
                     console.log(data);
                     for (var i = 0; i < data.length; i++) {
                         var move = data[i];
-                        var cell = $(".x" + move.X + "y" + move.Y + " .answer").text(move.Letter);
+
+                        var cell = $(".x" + move.X + "y" + move.Y);
+
+                        var currentColor = cell.css('backgroundColor');
+                        var toColor = get_color(move.UserHash);
+
+                        cell
+                            .css({backgroundColor: toColor})
+                            .animate({backgroundColor: currentColor}, 800,
+                                function(){$(this).css('background-color', '');});
+                        cell.find(".answer").text(move.Letter);
+
                         if (move.Id > since) since = move.Id;
                     }
                 }).always(function(){ updating = false; });
@@ -110,6 +121,48 @@ $(function() {
         });
     }
 });
+function get_color(user_hash){
+    var index = users.indexOf(user_hash);
+    if (index < 0){
+        users.push(user_hash);
+        generate_colors();
+    }
+    return colors[index];
+}
+function generate_colors(){
+    colors = [];
+    var e = 0.618033988749895;
+    for (var i = 0; i < users.length; i++){
+        var c = HSVtoRGB(e*i % 1.0, 0.5, 1.0);
+        colors.push("rgb("+[c.r,c.g,c.b].join()+")");
+    }
+}
+function HSVtoRGB(h, s, v) {
+    var r, g, b, i, f, p, q, t;
+    if (arguments.length === 1) {
+        s = h.s, v = h.v, h = h.h;
+    }
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
+}
+var colors = [];
+var users = [];
 var updating = false;
 var since = 0;
 function clear_highlights(){
