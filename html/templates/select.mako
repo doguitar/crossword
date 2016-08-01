@@ -17,5 +17,20 @@
     <div class="week"></div>
 </div>
 
+<div class="agenda">
+% for w in sorted(range(-4, 1), reverse=True):
+    % for d in range(0, 7):
+        <% today = (startdate - datetime.timedelta(days=d)).date() %>
+        <div class="day">
+            <div class="date">${today.strftime("%A %B %d, %Y")}</div>
+            % for c in crosswords.get(today, []):
+                <a href="${base}crossword/${c.get("Id")}">${c.get("Title")}</a>
+            % endfor
+        </div>
+    % endfor
+
+% endfor
+</div>
+
 
 </%def>
