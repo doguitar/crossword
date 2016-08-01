@@ -19,6 +19,7 @@
 
 <div class="agenda">
 % for w in sorted(range(-4, 1), reverse=True):
+    <% monday = startdate - datetime.timedelta(days=startdate.weekday()) + datetime.timedelta(days=w*7) %>
     % for d in range(0, 7):
         <% today = (startdate - datetime.timedelta(days=d)).date() %>
         <div class="day">
