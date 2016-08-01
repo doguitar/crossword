@@ -1,8 +1,5 @@
 @media all and (orientation:landscape)
 {
-    .container-fluid {
-        padding: 0 !important;
-    }
     .keyboard{
         width: 30vw;
         top: 71px;
@@ -144,4 +141,19 @@ td.cell.black {
 }
 #login input#confirm, #login input#display {
     display: none;
+}
+.calendar {
+    width: 100%;
+    border-left: black 1px solid;
+}
+
+.calendar .week {
+    clear: both;
+    border-top: black 1px solid;
+}
+.calendar .day{
+    float: left;
+    width: 14.285%;
+    height: 14vw;
+    border-right: black 1px solid;
 }

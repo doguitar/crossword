@@ -6,6 +6,7 @@ import time
 import manager
 import json
 import datetime
+from db import from_timestamp
 
 from mako.lookup import TemplateLookup
 from cherrypy.lib.static import serve_file
@@ -51,11 +52,18 @@ class Host(object):
 
     @cherrypy.expose
     def index(self, r=''):
+        crosswords = sorted(self.manager.database.select_puzzles(), key=lambda p: p["Timestamp"], reverse=True)
+
+        keys = set(map(lambda c: c["Timestamp"], crosswords))
+
+        c_dict = {from_timestamp(t).date(): filter(lambda c: c["Timestamp"] == t, crosswords) for t in keys}
+
         return self.__get_template("index.mako").render(
                 base=self.url_base,
-                crosswords=sorted(self.manager.database.select_puzzles(), key=lambda p: p["Timestamp"], reverse=True),
+                crosswords=c_dict,
                 username=self.get_hash(),
-                return_url=r)
+                return_url=r,
+                datetime=datetime)
 
     @cherrypy.expose
     def login(self, display=None, email=None, password=None, confirm=None, r=None):
