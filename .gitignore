@@ -61,6 +61,7 @@ target/
 .ipynb_checkpoints
 
 .idea/
+.vscode/
 settings.json
 host.db*
 crosswords/*
