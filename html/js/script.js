@@ -12,6 +12,7 @@ $(function() {
             }
         });
         $(".keyboard td").click(function () {
+            if(navigator && navigator.vibrate) navigator.vibrate([100]);
             var key = $(this).text();
             var cell = $(".cell.primary.secondary");
             switch (key) {
