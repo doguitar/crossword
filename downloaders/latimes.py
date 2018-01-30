@@ -5,7 +5,7 @@ class LATimesDownloader(object):
 
     @staticmethod
     def download(puzzle_date=None):
-        if not puzzle_date: puzzle_date = datetime.datetime.utcnow()
+        if not puzzle_date: puzzle_date = datetime.datetime.utcnow() - datetime.timedelta(hours=8)
         url = "http://cdn.games.arkadiumhosted.com/latimes/assets/DailyCrossword/"
         puzzle_name = "la{0:02d}{1:02d}{2:02d}.xml".format(puzzle_date.year-2000, puzzle_date.month, puzzle_date.day)
         headers = {

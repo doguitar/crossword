@@ -224,6 +224,48 @@ function is_letter(keycode){
     return keycode >= 65 && keycode <= 90;
 }
 
+function get_word_cells(cell){
+    cell = $(cell);
+    var vert = cell.parents("table").hasClass("vert");
+    var g = true;
+    var l = true;
+    var cells = [cell[0]];
+    var template = ".x{0}y{1}";
+    var mid;
+
+    if(vert){
+        template = template.format(cell.attr("x"), "{0}");
+        mid = parseInt(cell.attr("y"));
+    }
+    else{
+        template = template.format("{0}", cell.attr("y"))
+        mid = parseInt(cell.attr("x"));
+    }
+
+    for(var i = 1; g || l; i++){
+        if(g){
+            var gcell = $(template.format(mid+i));
+            if(gcell.length == 0 || gcell.hasClass("black")){
+                g = false;
+            }
+            else{
+                cells.push(gcell[0]);
+            }
+        }
+        if(l){
+            var lcell = $(template.format(mid-i));
+            if(lcell.length == 0 || lcell.hasClass("black")){
+                l = false;
+            }
+            else{
+                cells.push(lcell[0]);
+            }
+        }
+    }
+
+    return cells;
+}
+
 function highlight(cell){
     cell = $(cell);
     var vert = cell.parents("table").hasClass("vert");
@@ -293,3 +335,15 @@ function show_clues(){
     $("div.clue.primary").text(p_clue + ". " + clues[p_index][p_clue])
     $("div.clue.secondary").text(s_clue + ". " + clues[s_index][s_clue])
 }
+
+if (!String.prototype.format) {
+    String.prototype.format = function() {
+      var args = arguments;
+      return this.replace(/{(\d+)}/g, function(match, number) { 
+        return typeof args[number] != 'undefined'
+          ? args[number]
+          : match
+        ;
+      });
+    };
+  }
