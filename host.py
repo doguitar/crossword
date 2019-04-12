@@ -22,7 +22,7 @@ class Host(object):
         self.base_path = base_path
         self.url_base = url_base
         self.lookup = TemplateLookup(directories=[os.path.join(self.base_path, "html", "templates")])
-        self.manager = manager.Manager(base_path, os.path.join(base_path, "host.db"))
+        self.manager = manager.Manager(os.path.join("/", "data"), os.path.join("/", "data", "config", "host.db"))
         cherrypy.engine.subscribe('stop', self.__del__)
 
     def __del__(self):
@@ -192,8 +192,7 @@ class Host(object):
 try:
     print "launching"
     current_directory = os.path.dirname(os.path.realpath(__file__))
-
-    settings_file = os.path.join(current_directory, "settings.json")
+    settings_file = os.path.join("/", "data", "config", "settings.json")
     settings = { "url_base" : "/", "port" : 4567 }
 
     if os.path.exists(settings_file):

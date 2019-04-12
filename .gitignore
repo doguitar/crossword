@@ -62,6 +62,5 @@ target/
 
 .idea/
 .vscode/
-settings.json
-host.db*
-crosswords/*
+config/*
+data/*

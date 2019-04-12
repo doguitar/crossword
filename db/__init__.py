@@ -84,7 +84,8 @@ class DB(object):
                     connection.commit()
                     if cursor.lastrowid: self.last_id = cursor.lastrowid
                 except Exception as e:
-                    connection.rollback()
+                    if connection:
+                        connection.rollback()
                     raise e
                 finally:
                     if connection:

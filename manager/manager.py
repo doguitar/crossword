@@ -46,9 +46,8 @@ class Manager(object):
             (downloaders.LATimesDownloader, "{0}-{1}-{2}.LA Times", 'xml', self.read_xml)
         ]
         titles = map(lambda p: p["Title"], self.database.select_puzzles())
-        crossword_path = os.path.join(self.base_path, "crosswords")
-        if not os.path.exists(crossword_path):
-            os.makedirs(crossword_path)
+        if not os.path.exists(self.crossword_path):
+            os.makedirs(self.crossword_path)
 
         now = datetime.datetime.today()
         for i in range(0, 30):
@@ -58,7 +57,7 @@ class Manager(object):
                     return
                 title = mask.format(current.year, current.month, current.day)
                 if title not in titles:
-                    filename = os.path.join(crossword_path, title + "." + extension)
+                    filename = os.path.join(self.crossword_path, title + "." + extension)
                     try:
                         if not os.path.exists(filename):
                             data = downloader.download(current)
